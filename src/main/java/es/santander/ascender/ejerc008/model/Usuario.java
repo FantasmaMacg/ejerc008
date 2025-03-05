@@ -5,7 +5,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Usuario {
@@ -13,11 +19,27 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotBlank(message = "El nombre de usuario es obligatorio")
+    @Size(max = 50, message = "El nombre de usuario no puede tener más de 50 caracteres")
     private String username;
+
+    @NotBlank(message = "La contraseña es obligatoria")
+    @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
     private String password;
 
-    @OneToMany(mappedBy = "usuario")
-    private List<Persona> personas;
+    @JsonIgnore
+    @OneToOne
+    private Persona persona;
+  
+
+
+    public Persona getPersona() {
+        return persona;
+    }
+
+    public void setPersona(Persona persona) {
+        this.persona = persona;
+    }
 
     public Long getId() {
         return id;
@@ -43,11 +65,5 @@ public class Usuario {
         this.password = password;
     }
 
-    public List<Persona> getPersonas() {
-        return personas;
-    }
-
-    public void setPersonas(List<Persona> personas) {
-        this.personas = personas;
-    }
+   
 }

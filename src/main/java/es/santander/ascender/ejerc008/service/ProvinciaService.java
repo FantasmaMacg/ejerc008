@@ -39,7 +39,8 @@ public class ProvinciaService {
         if (provinciaOptional.isPresent()) {
             Provincia provincia = provinciaOptional.get();
             provincia.setNombre(provinciaDetails.getNombre());
-            // Add other fields as necessary
+            provincia.setCodigo(provinciaDetails.getCodigo());
+            provincia.setDescripcion(provinciaDetails.getDescripcion());
             return provinciaRepository.save(provincia);
         }
         return null;

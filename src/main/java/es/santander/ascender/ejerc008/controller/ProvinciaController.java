@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import es.santander.ascender.ejerc008.model.Provincia;
 import es.santander.ascender.ejerc008.service.ProvinciaService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/provincias")
@@ -26,7 +26,7 @@ public class ProvinciaController {
 
     // Create
     @PostMapping
-    public ResponseEntity<Provincia> createProvincia(@RequestBody Provincia provincia) {
+    public ResponseEntity<Provincia> createProvincia(@Valid @RequestBody Provincia provincia) {
         Provincia createdProvincia = provinciaService.createProvincia(provincia);
         return new ResponseEntity<>(createdProvincia, HttpStatus.CREATED);
     }
@@ -42,21 +42,13 @@ public class ProvinciaController {
     @GetMapping("/{id}")
     public ResponseEntity<Provincia> getProvinciaById(@PathVariable Long id) {
         Optional<Provincia> provincia = provinciaService.getProvinciaById(id);
-        if (provincia.isPresent()) {
-            return new ResponseEntity<>(provincia.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return provincia.map(ResponseEntity::ok).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     // Update
     @PutMapping("/{id}")
-    public ResponseEntity<Provincia> updateProvincia(@PathVariable Long id, @RequestBody Provincia provinciaDetails) {
+    public ResponseEntity<Provincia> updateProvincia(@PathVariable Long id, @Valid @RequestBody Provincia provinciaDetails) {
         Provincia updatedProvincia = provinciaService.updateProvincia(id, provinciaDetails);
-        if (updatedProvincia != null) {
-            return new ResponseEntity<>(updatedProvincia, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return updatedProvincia != null ? new ResponseEntity<>(updatedProvincia, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }

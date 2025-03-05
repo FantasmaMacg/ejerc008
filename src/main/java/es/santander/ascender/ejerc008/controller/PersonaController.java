@@ -6,17 +6,13 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import es.santander.ascender.ejerc008.model.Persona;
+import es.santander.ascender.ejerc008.model.Usuario;
 import es.santander.ascender.ejerc008.service.PersonaService;
+import es.santander.ascender.ejerc008.service.UsuarioService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/personas")
@@ -24,9 +20,17 @@ public class PersonaController {
     @Autowired
     private PersonaService personaService;
 
+    @Autowired
+    private UsuarioService usuarioService;
+
     // Create
     @PostMapping
-    public ResponseEntity<Persona> createPersona(@RequestBody Persona persona) {
+    public ResponseEntity<Persona> createPersona(@Valid @RequestBody Persona persona, @RequestParam String username, @RequestParam String password) {
+        Usuario usuario = new Usuario();
+        usuario.setUsername(username);
+        usuario.setPassword(password);
+        usuario = usuarioService.createUsuario(usuario);
+        persona.setUsuario(usuario);
         Persona createdPersona = personaService.createPersona(persona);
         return new ResponseEntity<>(createdPersona, HttpStatus.CREATED);
     }
@@ -47,8 +51,8 @@ public class PersonaController {
 
     // Update
     @PutMapping("/{id}")
-    public ResponseEntity<Persona> updatePersona(@PathVariable Long id, @RequestBody Persona personaDetails) {
-        Persona updatedPersona = personaService.updatePersona(id, personaDetails);
+    public ResponseEntity<Persona> updatePersona(@PathVariable Long id, @Valid @RequestBody Persona personaDetails, @RequestParam(required = false) String username, @RequestParam(required = false) String password) {
+        Persona updatedPersona = personaService.updatePersona(id, personaDetails, username, password);
         return updatedPersona != null ? new ResponseEntity<>(updatedPersona, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 

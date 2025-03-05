@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.santander.ascender.ejerc008.model.Persona;
-import es.santander.ascender.ejerc008.model.Provincia;
+import es.santander.ascender.ejerc008.model.Usuario;
 import es.santander.ascender.ejerc008.repository.PersonaRepository;
-import es.santander.ascender.ejerc008.repository.ProvinciaRepository;
+import es.santander.ascender.ejerc008.repository.UsuarioRepository;
 
 @Service
 @Transactional
@@ -19,10 +19,13 @@ public class PersonaService {
     private PersonaRepository personaRepository;
 
     @Autowired
-    private ProvinciaRepository provinciaRepository;
+    private UsuarioRepository usuarioRepository;
 
     // Create
     public Persona createPersona(Persona persona) {
+        if (persona.getUsuario() != null && personaRepository.findByUsuario(persona.getUsuario()).isPresent()) {
+            throw new IllegalArgumentException("El usuario ya está asociado a otra persona");
+        }
         return personaRepository.save(persona);
     }
 
@@ -39,7 +42,7 @@ public class PersonaService {
     }
 
     // Update
-    public Persona updatePersona(Long id, Persona personaDetails) {
+    public Persona updatePersona(Long id, Persona personaDetails, String username, String password) {
         Optional<Persona> personaOptional = personaRepository.findById(id);
         if (personaOptional.isPresent()) {
             Persona persona = personaOptional.get();
@@ -47,6 +50,18 @@ public class PersonaService {
             persona.setApellido(personaDetails.getApellido());
             persona.setEmail(personaDetails.getEmail());
             persona.setProvincia(personaDetails.getProvincia());
+
+            Usuario usuario = persona.getUsuario();
+            if (usuario != null) {
+                if (username != null && !username.isEmpty()) {
+                    usuario.setUsername(username);
+                }
+                if (password != null && !password.isEmpty()) {
+                    usuario.setPassword(password);
+                }
+                usuarioRepository.save(usuario);
+            }
+
             return personaRepository.save(persona);
         }
         return null;
@@ -56,7 +71,12 @@ public class PersonaService {
     public boolean deletePersona(Long id) {
         Optional<Persona> personaOptional = personaRepository.findById(id);
         if (personaOptional.isPresent()) {
+            Persona persona = personaOptional.get();
+            Usuario usuario = persona.getUsuario();
             personaRepository.deleteById(id);
+            if (usuario != null) {
+                usuarioRepository.deleteById(usuario.getId());
+            }
             return true;
         }
         return false;
