@@ -19,6 +19,9 @@ public class Persona {
     @ManyToOne
     private Provincia provincia;
 
+    @ManyToOne
+    private Usuario usuario;
+
     public Long getId() {
         return id;
     }
@@ -57,5 +60,13 @@ public class Persona {
 
     public void setProvincia(Provincia provincia) {
         this.provincia = provincia;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 }

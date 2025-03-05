@@ -15,6 +15,8 @@ public class Provincia {
 
     private String codigo;
 
+    private String descripcion; // New field
+
     public Long getId() {
         return id;
     }
@@ -37,5 +39,13 @@ public class Provincia {
 
     public void setCodigo(String codigo) {
         this.codigo = codigo;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 }
