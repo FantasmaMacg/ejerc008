@@ -32,10 +32,10 @@ public class Persona {
 
     @ManyToOne
     private Provincia provincia;
-    @JsonIgnore
+    
     @OneToOne
     private Usuario usuario;
-    
+
     public Long getId() {
         return id;
     }
