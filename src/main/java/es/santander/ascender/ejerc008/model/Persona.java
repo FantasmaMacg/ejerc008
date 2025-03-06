@@ -1,5 +1,7 @@
 package es.santander.ascender.ejerc008.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,9 +32,10 @@ public class Persona {
 
     @ManyToOne
     private Provincia provincia;
-
+    @JsonIgnore
     @OneToOne
     private Usuario usuario;
+    
     public Long getId() {
         return id;
     }
